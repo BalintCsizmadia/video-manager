@@ -1,0 +1,8 @@
+com/futurevending/videomanager/exception/VideoAlreadyExistsException.class
+com/futurevending/videomanager/config/WebConfig.class
+com/futurevending/videomanager/model/AbstractModel.class
+com/futurevending/videomanager/model/Video.class
+com/futurevending/videomanager/repository/VideoRepository.class
+com/futurevending/videomanager/controller/VideoController.class
+com/futurevending/videomanager/service/VideoService.class
+com/futurevending/videomanager/Application.class

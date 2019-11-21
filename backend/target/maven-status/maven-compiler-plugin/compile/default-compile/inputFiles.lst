@@ -1,0 +1,8 @@
+/home/balint/Documents/Develop/Trial/video-manager/backend/src/main/java/com/futurevending/videomanager/controller/VideoController.java
+/home/balint/Documents/Develop/Trial/video-manager/backend/src/main/java/com/futurevending/videomanager/model/Video.java
+/home/balint/Documents/Develop/Trial/video-manager/backend/src/main/java/com/futurevending/videomanager/repository/VideoRepository.java
+/home/balint/Documents/Develop/Trial/video-manager/backend/src/main/java/com/futurevending/videomanager/service/VideoService.java
+/home/balint/Documents/Develop/Trial/video-manager/backend/src/main/java/com/futurevending/videomanager/model/AbstractModel.java
+/home/balint/Documents/Develop/Trial/video-manager/backend/src/main/java/com/futurevending/videomanager/Application.java
+/home/balint/Documents/Develop/Trial/video-manager/backend/src/main/java/com/futurevending/videomanager/exception/VideoAlreadyExistsException.java
+/home/balint/Documents/Develop/Trial/video-manager/backend/src/main/java/com/futurevending/videomanager/config/WebConfig.java

@@ -1,0 +1,23 @@
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+#main-container {
+  color: white;
+}
+
+.video-list {
+  padding: 0px 10px;
+}
+
+/* use in playlist and videos */
+#paper {
+  background-color: #3b404c;
+  color: white;
+}
+
+/* use in playlist and videos */
+#title {
+  margin-bottom: 10px;
+}
