@@ -5,5 +5,6 @@ CREATE TABLE videos (
     name TEXT NOT NULL UNIQUE,
     duration TEXT NOT NULL,
     description TEXT,
-    url TEXT NOT NULL
+    url TEXT NOT NULL,
+    is_available BOOLEAN
 )
