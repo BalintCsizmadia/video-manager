@@ -15,6 +15,7 @@ public class Video extends AbstractModel implements Serializable {
     private String duration;
     private String description;
     private String url;
+    private boolean isAvailable;
 
     public Video() {
     }
@@ -51,4 +52,11 @@ public class Video extends AbstractModel implements Serializable {
         this.url = url;
     }
 
+    public boolean isAvailable() {
+        return isAvailable;
+    }
+
+    public void setAvailable(boolean available) {
+        isAvailable = available;
+    }
 }
