@@ -12,6 +12,7 @@ const App: React.FC = () => {
           <Typography variant="h6">Video manager</Typography>
         </header>
         <Route path="/" exact component={Main} />
+        <Route path="/add" component={Main} />
       </div>
     </Router>
   );
