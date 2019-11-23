@@ -9,8 +9,10 @@ import java.util.List;
 @Repository
 public interface VideoRepository extends JpaRepository<Video, Integer> {
 
-    List<Video> findAll();
-    
+    List<Video> findAllByOrderByIdAsc();
+
+    List<Video> findByIsAvailable(boolean available);
+
     @Override
     <S extends Video> S save(S s);
 }
