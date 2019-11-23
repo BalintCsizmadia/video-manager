@@ -4,4 +4,5 @@ export interface Video {
     duration: string | number; // ?
     description: string;
     url: string;
+    available: boolean;
 }
