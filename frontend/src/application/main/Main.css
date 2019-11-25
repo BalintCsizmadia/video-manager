@@ -3,8 +3,12 @@ ul {
   padding: 0;
 }
 
-#main-container {
+#main-container-dark {
   color: white;
+}
+
+#main-container {
+  margin: 0 30px;
 }
 
 .video-list {
@@ -13,9 +17,13 @@ ul {
 }
 
 /* use in playlist and videos */
-#paper {
+#paper-dark {
   background-color: #3b404c;
   color: white;
+}
+
+#paper {
+  background-color: beige;
 }
 
 /* use in playlist and videos */
