@@ -10,28 +10,35 @@ import {
   Paper,
   Button
 } from "@material-ui/core";
-import { DeleteForeverSharp } from '@material-ui/icons';
+import { DeleteForeverSharp } from "@material-ui/icons";
 import { Video } from "../utils/Interface";
 import { getVideoTumbnail } from "../utils/GeneralVideoFunction";
 import RemoveContentDialog from "../utils/RemoveContentDialog";
-
+import VideoPlayer from "./VideoPlayer";
 
 interface Props {
   videos: Video[];
+  /**
+   * 
+   * @param tempVideosToAdd Video[] array
+   * @description saves selected (by checkbox) videos into a temp. array
+   */
   addVideosToInMemory?(tempVideosToAdd: Video[]): void;
   removeVideosFromPlaylist?(videosToRemove: Video[]): void;
-  removeOneFromPlaylist?(videoId: number): void;
+  removeVideoFromPlaylist?(videoId: number): void;
 }
 
 const Videos: React.FC<Props> = (props: Props) => {
   const [checked, setChecked] = useState<Video[]>([]);
-  const [allVideos, setAllvideos] = useState<Video[]>([]);
+  const [videos, setVideos] = useState<Video[]>([]);
   const [isUserWantToDelete, setUserWantToDelete] = useState(false);
   const [videoIdToDelete, setVideoIdToDelete] = useState(0);
-  // const allVideos: Video[] = props.videos;
+  // video player
+  const [videoToPlay, setVideoToPlay] = useState<Video | null>(null);
+  const [isPlayerOpen, setPlayerOpen] = useState(false);
 
   useEffect(() => {
-    setAllvideos(props.videos);
+    setVideos(props.videos);
   }, [props]);
 
   const handleToggle = (value: Video) => () => {
@@ -57,9 +64,18 @@ const Videos: React.FC<Props> = (props: Props) => {
   };
 
   const removeOne = (id: number) => {
-    if (props.removeOneFromPlaylist) {
-      props.removeOneFromPlaylist(id);
+    if (props.removeVideoFromPlaylist) {
+      props.removeVideoFromPlaylist(id);
     }
+  };
+
+  const openVideoPlayer = (video: Video) => {
+    setVideoToPlay(video);
+    setPlayerOpen(true);
+  };
+
+  const closeVideoPlayer = () => {
+    setPlayerOpen(false);
   };
 
   const RemoveDialogComponent = RemoveContentDialog({
@@ -71,6 +87,13 @@ const Videos: React.FC<Props> = (props: Props) => {
     }
   });
 
+  const VideoPlayerComponent = VideoPlayer({
+    video: videoToPlay,
+    setStateBack: () => {
+      setPlayerOpen(false);
+    }
+  });
+
   return (
     <React.Fragment>
       {props.addVideosToInMemory ? (
@@ -78,11 +101,10 @@ const Videos: React.FC<Props> = (props: Props) => {
       ) : (
         <Typography id="title">Playlist</Typography>
       )}
-
       <Paper id="paper">
-        {allVideos.length > 0 ? (
+        {videos.length > 0 ? (
           <List>
-            {allVideos.map((video: any) => {
+            {videos.map((video: any) => {
               const videoId = video.id;
               return (
                 <ListItem key={videoId} button>
@@ -90,10 +112,21 @@ const Videos: React.FC<Props> = (props: Props) => {
                     id="tumbnail-img"
                     src={getVideoTumbnail(video.url)}
                     alt="cover"
+                    onClick={() => {
+                      openVideoPlayer(video);
+                    }}
                   />
-                  <ListItemText id={videoId} primary={video.name} secondary={video.description} />
+                  <ListItemText
+                    id={videoId}
+                    primary={video.name}
+                    secondary={video.description}
+                    onClick={() => {
+                      openVideoPlayer(video);
+                    }}
+                  />
                   <ListItemSecondaryAction>
-                    {!props.removeOneFromPlaylist ? (
+                    {/* // if do not pass this function, checkboxes are will be here */}
+                    {!props.removeVideoFromPlaylist ? (
                       <Checkbox
                         edge="end"
                         onChange={handleToggle(video)}
@@ -102,7 +135,8 @@ const Videos: React.FC<Props> = (props: Props) => {
                         color="primary"
                       />
                     ) : (
-                      props.removeOneFromPlaylist && (
+                      // if pass this function, delete option will be available
+                      props.removeVideoFromPlaylist && (
                         <Button
                           onClick={() => {
                             setVideoIdToDelete(video.id);
@@ -125,9 +159,15 @@ const Videos: React.FC<Props> = (props: Props) => {
           </ListItem>
         )}
       </Paper>
-      {/* REMOVE POP UP */}
+      {/* OPEN REMOVE POPUP */}
       {isUserWantToDelete && RemoveDialogComponent}
+      {/* OPEN VIDEO PLAYER */}
+      {isPlayerOpen && VideoPlayerComponent}
 
+      {/* class based solution
+      {isPlayerOpen && (
+        <VideoPlayer video={videoToPlay} setStateBack={closeVideoPlayer} />
+      )} */}
     </React.Fragment>
   );
 };

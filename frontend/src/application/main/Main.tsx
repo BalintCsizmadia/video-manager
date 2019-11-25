@@ -5,6 +5,8 @@ import Grid from "@material-ui/core/Grid";
 import Videos from "../videos/Videos";
 import { Video } from "../utils/Interface";
 import { Typography, Button } from "@material-ui/core";
+import { Link } from "react-router-dom";
+import AlertDialog from "../utils/AlertDialog";
 
 // set the base URL
 const axiosInst = axios.create({
@@ -25,6 +27,8 @@ const Main: React.FC = () => {
   );
   // informative messages
   const [message, setMessage] = useState<string>("");
+  // alert dialog indicator
+  const [isNewVideoAvailable, setNewVideoAvailable] = useState(false);
 
   // API call function
   const getVideos = async () => {
@@ -38,7 +42,7 @@ const Main: React.FC = () => {
   };
 
   // finalize the item addition to playlist
-  const handleUpdatePlaylistClick = async (videoList: Video[]) => {
+  const handleAddToPlaylistClick = async (videoList: Video[]) => {
     await axiosInst.put("/videos/playlist/", videoList).then(() => {
       updatePlaylist();
     });
@@ -54,10 +58,31 @@ const Main: React.FC = () => {
       getVideos()
         .then((allVideos: Video[]) => {
           setVideos(allVideos);
+          // add videos to playlist
+          const tmpPlaylist: Video[] = [];
+          allVideos.map((v: Video) => {
+            if (v.available) {
+              tmpPlaylist.push(v);
+            }
+          });
+          // add videos to playlist
+          setPlaylistVideos(tmpPlaylist);
         })
         .catch((err: any) => {
           setMessage(err.message);
         });
+      // TODO extra
+      // get all videos in every seconds
+      // setInterval(() => {
+      //   getVideos()
+      //   .then((allVideos: Video[]) => {
+      //     if (videos.length < allVideos.length) {
+      //       console.log('UPDATE');
+      //       setVideos(allVideos);
+      //       setNewVideoAvailable(true);
+      //     }
+      //   })
+      // }, 60000);
     },
     [
       // variable changes here indicates function re-call
@@ -80,10 +105,10 @@ const Main: React.FC = () => {
       v.available = true;
     });
     setInMemoryVideos(videosToInMemory);
-    // console.log(videosToInMemory);
   };
 
-  const removeOneFromPlaylist = (videoId: number) => {
+  // remove one video from playlist
+  const removeVideoFromPlaylist = (videoId: number) => {
     removeFromPlaylist(videoId).then(() => {
       updatePlaylist();
     });
@@ -120,8 +145,8 @@ const Main: React.FC = () => {
 
   const PlaylistComponent = Videos({
     videos: playlistVideos,
+    removeVideoFromPlaylist
     // removeVideosFromPlaylist,
-    removeOneFromPlaylist
   });
   const VideosComponent = Videos({ videos, addVideosToInMemory });
 
@@ -146,28 +171,37 @@ const Main: React.FC = () => {
                   variant="contained"
                   color="primary"
                   onClick={() => {
-                    // add the previously selected items to the playlist
-                    handleUpdatePlaylistClick(inMemoryVideos);
+                    // add the previously selected items (from in memory) to the playlist
+                    handleAddToPlaylistClick(inMemoryVideos);
                   }}
                 >
                   Add to playlist
                 </Button>
               </Grid>
               <Grid item xs={12} sm={6}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() => {
-                    // TODO now I remove one item at a time so it is not working, maybe I should remove it
-                    handleUpdatePlaylistClick(inMemoryVideosToRemove);
-                  }}
+                {/* Redirect to 'Add new video' page */}
+                <Link
+                  to={{ pathname: "/add" }}
+                  style={{ textDecoration: "none" }}
                 >
-                  Add new video
-                </Button>
+                  <Button variant="contained" color="primary">
+                    Add new video
+                  </Button>
+                </Link>
               </Grid>
             </Grid>
           </div>
         </div>
+      )}
+
+      {isNewVideoAvailable && (
+        <AlertDialog
+          title="New content"
+          message="New video available"
+          setState={() => {
+            setNewVideoAvailable(false);
+          }}
+        />
       )}
     </div>
   );

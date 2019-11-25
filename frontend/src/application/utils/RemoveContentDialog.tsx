@@ -13,7 +13,8 @@ interface Props {
   // or multiple items to delete
   itemIdsToDelete?: number[];
   delete(id: number | string): void;
-  /*
+  /**
+   *  @description
       In the parent class we need a boolean state variable (for example 'isUserWantToDelete')
       with default 'false' value.
       After value will be 'true' and this AlertDialog component is calling
@@ -27,7 +28,6 @@ const RemoveContentDialog: React.FC<Props> = (props: Props) => {
   const [isOpen, setOpen] = useState(true);
 
   useEffect(() => {
-    console.log(isOpen);
     setOpen(true);
     if (props.itemIdToDelete && props.itemIdsToDelete) {
       console.warn(
