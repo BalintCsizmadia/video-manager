@@ -30,16 +30,15 @@ public class VideoController {
     }
 
     @RequestMapping(path = "videos/{id}",
-            method = RequestMethod.PUT,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            method = RequestMethod.PUT)
     public void update(@PathVariable("id") Integer id, @RequestBody Video video) {
         // update one video's "available" member
         videoService.updateAvailability(id, video);
     }
 
-    // TODO implement
     @RequestMapping(path = "videos/add",
-            method = RequestMethod.POST)
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public Video add(@RequestBody Video video) throws VideoAlreadyExistsException {
         try {
             return videoService.add(video);
@@ -57,8 +56,7 @@ public class VideoController {
     }
 
     @RequestMapping(path = "videos/playlist",
-            method = RequestMethod.PUT,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            method = RequestMethod.PUT)
     public void updatePlaylist(@RequestBody List<Video> videos) {
         // Update multiple videos' "available" member
         for (Video video : videos) {
@@ -67,8 +65,7 @@ public class VideoController {
     }
 
     @RequestMapping(path = "videos/playlist/{id}",
-            method = RequestMethod.POST,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            method = RequestMethod.POST)
     public void removeFromPlaylist(@PathVariable Integer id) {
         videoService.removeFromPlaylist(id);
     }
