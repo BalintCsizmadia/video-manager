@@ -1,7 +1,8 @@
-body {
+/* dark */
+/* body{
   background-color: #282c34;
   margin: 0 30px;
-}
+} */
 
 .App {
   text-align: center;
@@ -12,6 +13,18 @@ body {
 }
 
 .App-header {
+  background-color: #ff6857;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.App-header-dark {
   background-color: #282c34;
   /* min-height: 100vh; */
   display: flex;
