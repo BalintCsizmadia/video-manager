@@ -19,18 +19,19 @@ import VideoPlayer from "./VideoPlayer";
 interface Props {
   videos: Video[];
   /**
-   * 
+   *
    * @param tempVideosToAdd Video[] array
-   * @description saves selected (by checkbox) videos into a temp. array
+   * @description saves selected (by checkbox) videos into a temporary array
    */
   addVideosToInMemory?(tempVideosToAdd: Video[]): void;
-  removeVideosFromPlaylist?(videosToRemove: Video[]): void;
   removeVideoFromPlaylist?(videoId: number): void;
 }
 
 const Videos: React.FC<Props> = (props: Props) => {
   const [checked, setChecked] = useState<Video[]>([]);
+  // 'videos' comes as a property
   const [videos, setVideos] = useState<Video[]>([]);
+  // delete a video
   const [isUserWantToDelete, setUserWantToDelete] = useState(false);
   const [videoIdToDelete, setVideoIdToDelete] = useState(0);
   // video player
@@ -43,7 +44,6 @@ const Videos: React.FC<Props> = (props: Props) => {
 
   const handleToggle = (value: Video) => () => {
     const currentIndex = checked.indexOf(value);
-
     const newChecked = [...checked];
     if (currentIndex === -1) {
       newChecked.push(value);
@@ -54,16 +54,10 @@ const Videos: React.FC<Props> = (props: Props) => {
     if (props.addVideosToInMemory) {
       // save selected videos to a temporary array which is available in the parent function
       props.addVideosToInMemory(newChecked);
-    } else {
-      if (props.removeVideosFromPlaylist) {
-        console.log("Remove");
-        console.log(newChecked);
-        props.removeVideosFromPlaylist(newChecked);
-      }
     }
   };
 
-  const removeOne = (id: number) => {
+  const removeVideo = (id: number) => {
     if (props.removeVideoFromPlaylist) {
       props.removeVideoFromPlaylist(id);
     }
@@ -78,10 +72,12 @@ const Videos: React.FC<Props> = (props: Props) => {
     setPlayerOpen(false);
   };
 
+  // function based components
+
   const RemoveDialogComponent = RemoveContentDialog({
     name: "video",
     itemIdToDelete: videoIdToDelete,
-    delete: removeOne,
+    delete: removeVideo,
     setStateBack: () => {
       setUserWantToDelete(false);
     }
@@ -90,7 +86,7 @@ const Videos: React.FC<Props> = (props: Props) => {
   const VideoPlayerComponent = VideoPlayer({
     video: videoToPlay,
     setStateBack: () => {
-      setPlayerOpen(false);
+      closeVideoPlayer();
     }
   });
 
@@ -125,7 +121,7 @@ const Videos: React.FC<Props> = (props: Props) => {
                     }}
                   />
                   <ListItemSecondaryAction>
-                    {/* // if do not pass this function, checkboxes are will be here */}
+                    {/* if do not pass this function, checkboxes are will be here */}
                     {!props.removeVideoFromPlaylist ? (
                       <Checkbox
                         edge="end"
@@ -142,6 +138,7 @@ const Videos: React.FC<Props> = (props: Props) => {
                             setVideoIdToDelete(video.id);
                             setUserWantToDelete(true);
                           }}
+                          style={{ margin: "-10px" }}
                         >
                           <DeleteForeverSharp color="error" />
                         </Button>

@@ -34,7 +34,7 @@ const RemoveContentDialog: React.FC<Props> = (props: Props) => {
         "You cannot use /itemIdToDelete/ and /itemIdsToDelete/ props at the same time."
       );
     }
-  }, [isOpen]);
+  }, [props, isOpen]);
 
   const handleClose = () => {
     setOpen(false);
@@ -49,7 +49,7 @@ const RemoveContentDialog: React.FC<Props> = (props: Props) => {
     } else if (props.itemIdsToDelete) {
       // remove multiple items
       props.itemIdsToDelete.map((id: number) => {
-        props.delete(id);
+        return props.delete(id);
       });
     }
   };

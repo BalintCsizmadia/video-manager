@@ -4,9 +4,10 @@ import { Grid, TextField, Typography, Button } from "@material-ui/core";
 import { Redirect } from "react-router";
 import axios from "axios";
 import AlertDialog from "../utils/AlertDialog";
+import { HttpStatus } from "../utils/HttpStatus";
 
 const axiosInst = axios.create({
-  baseURL: "http://localhost:8080"
+  baseURL: process.env.REACT_APP_BACKEND_BASE_URL
 });
 
 const AddVideoForm: React.FC = () => {
@@ -41,21 +42,28 @@ const AddVideoForm: React.FC = () => {
       isValidDuration(duration) &&
       isValidDescription(description)
     ) {
-      // api call with valid parameters
       const newVideo = {
         name: name.trimEnd(),
         url,
         duration,
         description: description.trimEnd()
       };
+      // api call with valid parameters
       addNewVideo(newVideo)
         .then((res: any) => {
-          console.log("video uploaded");
-          // open alert dialog and display message about successful video addition
-          setUserAlertAboutRequestStatus(true);
+          // success
+          if (res.status === HttpStatus.OK) {
+            // open alert dialog and display message about successful video addition
+            setUserAlertAboutRequestStatus(true);
+          } else {
+            console.error(res);
+          }
         })
         .catch((err: any) => {
-          if (err.response.status === 401 && err.response.data) {
+          if (
+            err.response.status === HttpStatus.UNAUTHORIZED &&
+            err.response.data
+          ) {
             setMessage(err.response.data.message);
           }
         });
@@ -111,107 +119,107 @@ const AddVideoForm: React.FC = () => {
 
   return (
     <React.Fragment>
-      <Typography>Add new video</Typography>
-      <Grid container spacing={0}>
-        <Grid item xs={12}>
-          <TextField
-            id="outlined-with-placeholder"
-            label="Name"
-            //      required={true}
-            margin="normal"
-            variant="outlined"
-            value={name}
-            onChange={(evt: ChangeEvent<HTMLInputElement>) => {
-              setName(evt.target.value.trimStart());
-            }}
-            error={isNameError}
-            helperText={
-              isNameError && "Name must be at least 3 characters long"
-            }
-          />
+      <div id="video-form-container">
+        <Typography>Add new video</Typography>
+        <Grid container spacing={0}>
+          <Grid item xs={12}>
+            <TextField
+              label="Name"
+              // required={true}
+              margin="normal"
+              variant="outlined"
+              value={name}
+              onChange={(evt: ChangeEvent<HTMLInputElement>) => {
+                setName(evt.target.value.trimStart());
+              }}
+              error={isNameError}
+              helperText={
+                isNameError && "Name must be at least 3 characters long"
+              }
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              label="Url"
+              margin="normal"
+              variant="outlined"
+              value={url}
+              placeholder="https://youtu.be/C0DPdy98e4h"
+              onChange={(evt: ChangeEvent<HTMLInputElement>) => {
+                setUrl(evt.target.value.trim());
+              }}
+              error={isUrlError}
+              helperText={isUrlError && "Invalid URL format"}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              label="Duration"
+              margin="normal"
+              variant="outlined"
+              value={duration}
+              placeholder="2:30:47"
+              onChange={(evt: ChangeEvent<HTMLInputElement>) => {
+                setDuration(evt.target.value.trim());
+              }}
+              error={isDurationError}
+              helperText={isDurationError && "Invalid format"}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              label="Description"
+              margin="normal"
+              variant="outlined"
+              multiline
+              rows="3"
+              value={description}
+              onChange={(evt: ChangeEvent<HTMLInputElement>) => {
+                setDescription(evt.target.value.trimStart());
+              }}
+              error={isDescriptionError}
+              helperText={
+                isDescriptionError && "Please add a short description"
+              }
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Typography color="error">{message}</Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={onSubmit}
+              style={{ marginTop: "20px" }}
+            >
+              Submit
+            </Button>
+          </Grid>
+          {/* GO BACK */}
+          <Grid item xs={12}>
+            <Button
+              variant="outlined"
+              onClick={() => {
+                setSuccessfulRequest(true);
+              }}
+              style={{ width: "88px", marginTop: "20px" }}
+            >
+              Back
+            </Button>
+          </Grid>
         </Grid>
-        <Grid item xs={12}>
-          <TextField
-            id="outlined-with-placeholder"
-            label="Url"
-            margin="normal"
-            variant="outlined"
-            value={url}
-            placeholder="https://youtu.be/C0DPdy98e4h"
-            onChange={(evt: ChangeEvent<HTMLInputElement>) => {
-              setUrl(evt.target.value.trim());
-            }}
-            error={isUrlError}
-            helperText={isUrlError && "Invalid URL format"}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <TextField
-            id="outlined-with-placeholder"
-            label="Duration"
-            margin="normal"
-            variant="outlined"
-            value={duration}
-            placeholder="2:30:47"
-            onChange={(evt: ChangeEvent<HTMLInputElement>) => {
-              setDuration(evt.target.value.trim());
-            }}
-            error={isDurationError}
-            helperText={isDurationError && "Invalid format"}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <TextField
-            id="outlined-with-placeholder"
-            label="Description"
-            margin="normal"
-            variant="outlined"
-            multiline
-            rows="3"
-            value={description}
-            onChange={(evt: ChangeEvent<HTMLInputElement>) => {
-              setDescription(evt.target.value.trimStart());
-            }}
-            error={isDescriptionError}
-            helperText={isDescriptionError && "Please add a short description"}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <Typography color="error">{message}</Typography>
-        </Grid>
-        <Grid item xs={12}>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={onSubmit}
-            style={{ marginTop: "20px" }}
-          >
-            Submit
-          </Button>
-        </Grid>
-        {/* GO BACK */}
-        <Grid item xs={12}>
-          <Button
-            variant="outlined"
-            onClick={() => {
+        {isUserAlertedAboutReqestStatus && (
+          <AlertDialog
+            title="Completed"
+            message="New video has been added"
+            setState={() => {
               setSuccessfulRequest(true);
             }}
-            style={{ width: "88px", marginTop: "20px" }}
-          >
-            Back
-          </Button>
-        </Grid>
-      </Grid>
-      {isUserAlertedAboutReqestStatus && (
-        <AlertDialog
-          title="Completed"
-          message="New video has been added"
-          setState={() => {
-            setSuccessfulRequest(true);
-          }}
-        />
-      )}
-      {isSuccessfulRequest && <Redirect to="/" />}
+          />
+        )}
+        {isSuccessfulRequest && <Redirect to="/" />}
+      </div>
     </React.Fragment>
   );
 };

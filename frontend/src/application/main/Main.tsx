@@ -10,35 +10,47 @@ import AlertDialog from "../utils/AlertDialog";
 
 // set the base URL
 const axiosInst = axios.create({
-  baseURL: "http://localhost:8080"
+  baseURL: process.env.REACT_APP_BACKEND_BASE_URL
 });
 
 const Main: React.FC = () => {
-  // state, setState
   // all videos
-  const [videos, setVideos] = useState<Video[]>([]);
+  const [allVideos, setAllVideos] = useState<Video[]>([]);
   // videos in playlist
   const [playlistVideos, setPlaylistVideos] = useState<Video[]>([]);
-  // videos to playlist before adding
+  // videos in playlist before adding them to DB
   const [inMemoryVideos, setInMemoryVideos] = useState<Video[]>([]);
-  // videos to playlist before removing
-  const [inMemoryVideosToRemove, setInMemoryVideosToRemove] = useState<Video[]>(
-    []
-  );
   // informative messages
   const [message, setMessage] = useState<string>("");
-  // alert dialog indicator
+  // TODO alert dialog indicator
   const [isNewVideoAvailable, setNewVideoAvailable] = useState(false);
 
-  // API call function
+  // API call functions
+  // get all videos from available videos list
   const getVideos = async () => {
     const { data } = await axiosInst.get("/videos");
     return data;
   };
 
+  // get videos which are in the playlist
   const getPlaylistVideos = async () => {
     const { data } = await axiosInst.get("videos/playlist");
     return data;
+  };
+
+  // remove one video from playlist
+  const removeVideoFromPlaylist = async (videoId: number) => {
+    await axiosInst.post(`/videos/playlist/${videoId}`).then(() => {
+      updatePlaylist();
+    });
+  };
+
+  // use in VideosComponent when select videos
+  const addVideosToInMemory = (videosToInMemory: Video[]) => {
+    videosToInMemory.map(v => {
+      v.available = true;
+    });
+    setInMemoryVideos(videosToInMemory);
   };
 
   // finalize the item addition to playlist
@@ -48,8 +60,10 @@ const Main: React.FC = () => {
     });
   };
 
-  const removeFromPlaylist = async (videoId: number) => {
-    await axiosInst.post(`/videos/playlist/${videoId}`);
+  const updatePlaylist = () => {
+    getPlaylistVideos().then((playlistVideos: Video[]) => {
+      setPlaylistVideos(playlistVideos);
+    });
   };
 
   useEffect(
@@ -57,7 +71,7 @@ const Main: React.FC = () => {
       // get all videos from db
       getVideos()
         .then((allVideos: Video[]) => {
-          setVideos(allVideos);
+          setAllVideos(allVideos);
           // add videos to playlist
           const tmpPlaylist: Video[] = [];
           allVideos.map((v: Video) => {
@@ -72,7 +86,7 @@ const Main: React.FC = () => {
           setMessage(err.message);
         });
       // TODO extra
-      // get all videos in every seconds
+      // get all (available) videos in every seconds
       // setInterval(() => {
       //   getVideos()
       //   .then((allVideos: Video[]) => {
@@ -89,66 +103,17 @@ const Main: React.FC = () => {
     ]
   );
 
-  // add one video to the playlist
-  const addToPlaylist = (videoToAdd: Video) => {
-    // check if item already in the list or not
-    if (
-      !(playlistVideos.filter((v: Video) => v.id === videoToAdd.id).length > 0)
-    ) {
-      setPlaylistVideos([...playlistVideos, videoToAdd]);
-    }
-  };
-
-  // use in VideosComponent when select videos
-  const addVideosToInMemory = (videosToInMemory: Video[]) => {
-    videosToInMemory.map(v => {
-      v.available = true;
-    });
-    setInMemoryVideos(videosToInMemory);
-  };
-
-  // remove one video from playlist
-  const removeVideoFromPlaylist = (videoId: number) => {
-    removeFromPlaylist(videoId).then(() => {
-      updatePlaylist();
-    });
-  };
-
-  const updatePlaylist = () => {
-    getPlaylistVideos().then((playlistVideos: Video[]) => {
-      setPlaylistVideos(playlistVideos);
-    });
-  };
-
-  // FIXME remove multiple videos
-  const removeVideosFromPlaylist = (vids: Video[]) => {
-    vids.map(v => {
-      v.available = false;
-    });
-    setInMemoryVideosToRemove(vids);
-  };
-
-  // UPDATE - with this approach, the whole list loads again
-  // and the checkboxes will be empty
-  // getVideos()
-  //   .then((allVideos: Video[]) => {
-  //     setVideos(allVideos);
-  //     // store videos for playlist
-  //     let tempPlaylist: Video[] = [];
-  //     allVideos.map((v: Video) => {
-  //       if (v.available) {
-  //         tempPlaylist.push(v);
-  //       }
-  //     });
-  //     setPlaylistVideos(tempPlaylist);
-  //   })
+  // function based components
 
   const PlaylistComponent = Videos({
     videos: playlistVideos,
     removeVideoFromPlaylist
-    // removeVideosFromPlaylist,
   });
-  const VideosComponent = Videos({ videos, addVideosToInMemory });
+
+  const VideosComponent = Videos({
+    videos: allVideos,
+    addVideosToInMemory
+  });
 
   return (
     <div id="main-container">

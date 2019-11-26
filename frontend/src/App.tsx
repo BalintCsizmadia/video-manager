@@ -10,7 +10,7 @@ const App: React.FC = () => {
     <Router>
       <div className="App">
         <header className="App-header">
-          <Typography variant="h6">Video manager</Typography>
+          <Typography variant="h6">Video Manager</Typography>
         </header>
         <Route path="/" exact component={Main} />
         <Route path="/add" component={AddVideoForm} />
