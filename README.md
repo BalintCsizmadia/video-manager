@@ -52,9 +52,9 @@ Application is running on http://localhost:3000/
 Navigate to the root (backend/frontend) of the project via command line and execute the command above:
 
 0. **Database**:
-- Change the **spring.datasource.url** in **backend/src/main/resources/application.properties** from Local to Docker
-* * **local:** jdbc:postgresql://localhost:5433/videomanager
-* * **docker:** jdbc:postgresql://futurevending-postgres:5432/videomanager
+- Change the **spring.datasource.url** in **backend/src/main/resources/application.properties** from Local to Docker:
+  * **Local:** jdbc:postgresql://localhost:5433/videomanager
+  * **Docker:** jdbc:postgresql://futurevending-postgres:5432/videomanager
 
 1. **Backend**:
 - **mvn clean package**
