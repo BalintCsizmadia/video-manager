@@ -1,0 +1,42 @@
+
+futurevending-postgres:
+  container_name: futurevending-postgres
+  image: postgres
+  ports:
+    - "5432"
+  environment:
+    POSTGRES_PASSWORD: admin
+    POSTGRES_DB: videomanager
+  volumes:
+    - ./db/postgres:/var/lib/postgresql/data
+
+futurevending-pgadmin:
+  container_name: futurevending-pgadmin
+  image: thajeztah/pgadmin4
+  links:
+    - futurevending-postgres
+  ports:
+    - "5050:5050"
+
+futurevending-backend-api:
+  container_name: futurevending-backend
+  image: videomanagerbackdev:9.11.28
+  links:
+    - futurevending-postgres
+  environment:
+    FUTURE_VENDING_POSTGRES: futurevending-postgres
+  ports:
+    - "8080:8080"
+
+futurevending-frontend-web:
+  container_name: futurevending-frontend
+  image: videomanagerfrontdev:9.11.28
+  links:
+    - futurevending-backend-api
+  ports:
+    - "3001:3000"
+  volumes:
+    - './frontend:/frontend'
+    - '/frontend/node_modules'
+
+# docker-compose up
