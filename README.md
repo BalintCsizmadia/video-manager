@@ -18,7 +18,9 @@
 
 # 
 
-## Easy run:
+## Running:
+
+### 1. **On local machine:**
 1. **Database**: 
 * Create a **PostgreSQL** database:
 * name: **videomanager**
@@ -40,4 +42,28 @@ Navigate to the root (backend/frontend) of the project via command line and exec
 
 3. **Frontend**:
 - Before first running (install dependencies): **npm install**
-- **npm run**
+- **npm start**
+
+Application is running on http://localhost:3000/
+
+#
+### 2. **With Docker:**
+
+Navigate to the root (backend/frontend) of the project via command line and execute the command above:
+
+0. **Database**:
+- Change the **spring.datasource.url** in **backend/src/main/resources/application.properties** from Local to Docker
+* * **local:** jdbc:postgresql://localhost:5433/videomanager
+* * **docker:** jdbc:postgresql://futurevending-postgres:5432/videomanager
+
+1. **Backend**:
+- **mvn clean package**
+- **docker build -t="videomanagerbackdev:9.11.28" .**
+
+2. **Frontend**:
+- **docker build -t="videomanagerfrontdev:9.11.28" .**
+
+3. **Root** folder:
+- **docker-compose up**
+
+Application is running on http://localhost:3001/
