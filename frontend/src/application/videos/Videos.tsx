@@ -8,7 +8,8 @@ import {
   ListItemSecondaryAction,
   List,
   Paper,
-  Button
+  Button,
+  Tooltip
 } from "@material-ui/core";
 import { DeleteForeverSharp } from "@material-ui/icons";
 import { Video } from "../utils/Interface";
@@ -133,6 +134,7 @@ const Videos: React.FC<Props> = (props: Props) => {
                     ) : (
                       // if pass this function, delete option will be available
                       props.removeVideoFromPlaylist && (
+                        <Tooltip title="Delete" enterDelay={900}>
                         <Button
                           onClick={() => {
                             setVideoIdToDelete(video.id);
@@ -142,6 +144,7 @@ const Videos: React.FC<Props> = (props: Props) => {
                         >
                           <DeleteForeverSharp color="error" />
                         </Button>
+                        </Tooltip>
                       )
                     )}
                   </ListItemSecondaryAction>

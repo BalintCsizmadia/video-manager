@@ -7,6 +7,7 @@ import { Video } from "../utils/Interface";
 import { Typography, Button } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import AlertDialog from "../utils/AlertDialog";
+import { HttpStatus } from "../utils/HttpStatus";
 
 // set the base URL
 const axiosInst = axios.create({
@@ -22,7 +23,9 @@ const Main: React.FC = () => {
   const [inMemoryVideos, setInMemoryVideos] = useState<Video[]>([]);
   // informative messages
   const [message, setMessage] = useState<string>("");
-  // TODO alert dialog indicator
+  // for handle video adding attempt without selected items
+  const [isEmptyVideolist, setEmptyVideoslist] = useState(false);
+  // TODO extra - alert dialog indicator
   const [isNewVideoAvailable, setNewVideoAvailable] = useState(false);
 
   // API call functions
@@ -40,8 +43,12 @@ const Main: React.FC = () => {
 
   // remove one video from playlist
   const removeVideoFromPlaylist = async (videoId: number) => {
-    await axiosInst.post(`/videos/playlist/${videoId}`).then(() => {
-      updatePlaylist();
+    await axiosInst.post(`/videos/playlist/${videoId}`).then((res: any) => {
+      if (res.status === HttpStatus.OK) {
+        updatePlaylist();
+      } else {
+        console.log(res);
+      }
     });
   };
 
@@ -55,9 +62,18 @@ const Main: React.FC = () => {
 
   // finalize the item addition to playlist
   const handleAddToPlaylistClick = async (videoList: Video[]) => {
-    await axiosInst.put("/videos/playlist/", videoList).then(() => {
-      updatePlaylist();
-    });
+    if (videoList.length > 0) {
+      await axiosInst.put("/videos/playlist/", videoList).then((res: any) => {
+        if (res.status === HttpStatus.OK) {
+          updatePlaylist();
+        } else {
+          console.log(res);
+        }
+      });
+    } else {
+      // handle empty addition attempt
+      setEmptyVideoslist(true);
+    }
   };
 
   const updatePlaylist = () => {
@@ -79,7 +95,6 @@ const Main: React.FC = () => {
               tmpPlaylist.push(v);
             }
           });
-          // add videos to playlist
           setPlaylistVideos(tmpPlaylist);
         })
         .catch((err: any) => {
@@ -99,7 +114,7 @@ const Main: React.FC = () => {
       // }, 60000);
     },
     [
-      // variable changes here indicates function re-call
+      // variable changing here indicates function re-call
     ]
   );
 
@@ -139,12 +154,14 @@ const Main: React.FC = () => {
                     // add the previously selected items (from in memory) to the playlist
                     handleAddToPlaylistClick(inMemoryVideos);
                   }}
+                  // another solution for handle empty adding attempt
+                  // disabled={inMemoryVideos.length < 1}
                 >
                   Add to playlist
                 </Button>
               </Grid>
               <Grid item xs={12} sm={6}>
-                {/* Redirect to 'Add new video' page */}
+                {/* redirect to 'Add new video' page */}
                 <Link
                   to={{ pathname: "/add" }}
                   style={{ textDecoration: "none" }}
@@ -157,6 +174,16 @@ const Main: React.FC = () => {
             </Grid>
           </div>
         </div>
+      )}
+
+      {isEmptyVideolist && (
+        <AlertDialog
+          title="Oops"
+          message="Select video(s) from 'Available videos' then try again"
+          setState={() => {
+            setEmptyVideoslist(false);
+          }}
+        />
       )}
 
       {isNewVideoAvailable && (
