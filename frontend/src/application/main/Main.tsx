@@ -16,7 +16,7 @@ const axiosInst = axios.create({
 
 const Main: React.FC = () => {
   // all videos
-  const [allVideos, setAllVideos] = useState<Video[]>([]);
+  const [allVideo, setAllVideo] = useState<Video[]>([]);
   // videos in playlist
   const [playlistVideos, setPlaylistVideos] = useState<Video[]>([]);
   // videos in playlist before adding them to DB
@@ -24,7 +24,7 @@ const Main: React.FC = () => {
   // informative messages
   const [message, setMessage] = useState<string>("");
   // for handle video adding attempt without selected items
-  const [isEmptyVideolist, setEmptyVideoslist] = useState(false);
+  const [isEmptyVideolist, setEmptyVideolist] = useState(false);
   // TODO extra - alert dialog indicator
   const [isNewVideoAvailable, setNewVideoAvailable] = useState(false);
 
@@ -54,6 +54,7 @@ const Main: React.FC = () => {
 
   // use in VideosComponent when select videos
   const addVideosToInMemory = (videosToInMemory: Video[]) => {
+    // eslint-disable-next-line
     videosToInMemory.map(v => {
       v.available = true;
     });
@@ -72,7 +73,7 @@ const Main: React.FC = () => {
       });
     } else {
       // handle empty addition attempt
-      setEmptyVideoslist(true);
+      setEmptyVideolist(true);
     }
   };
 
@@ -84,13 +85,14 @@ const Main: React.FC = () => {
 
   useEffect(
     () => {
-      // get all videos from db
+      // get all video from db
       getVideos()
-        .then((allVideos: Video[]) => {
-          setAllVideos(allVideos);
+        .then((allVideo: Video[]) => {
+          setAllVideo(allVideo);
           // add videos to playlist
           const tmpPlaylist: Video[] = [];
-          allVideos.map((v: Video) => {
+          // eslint-disable-next-line
+          allVideo.map((v: Video) => {
             if (v.available) {
               tmpPlaylist.push(v);
             }
@@ -101,13 +103,13 @@ const Main: React.FC = () => {
           setMessage(err.message);
         });
       // TODO extra
-      // get all (available) videos in every seconds
+      // get all (available) video in every seconds
       // setInterval(() => {
       //   getVideos()
-      //   .then((allVideos: Video[]) => {
-      //     if (videos.length < allVideos.length) {
+      //   .then((allVideo: Video[]) => {
+      //     if (videos.length < allVideo.length) {
       //       console.log('UPDATE');
-      //       setVideos(allVideos);
+      //       setVideos(allVideo);
       //       setNewVideoAvailable(true);
       //     }
       //   })
@@ -126,7 +128,7 @@ const Main: React.FC = () => {
   });
 
   const VideosComponent = Videos({
-    videos: allVideos,
+    videos: allVideo,
     addVideosToInMemory
   });
 
@@ -181,7 +183,7 @@ const Main: React.FC = () => {
           title="Oops"
           message="Select video(s) from 'Available videos' then try again"
           setState={() => {
-            setEmptyVideoslist(false);
+            setEmptyVideolist(false);
           }}
         />
       )}
